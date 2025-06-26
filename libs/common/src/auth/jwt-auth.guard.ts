@@ -40,6 +40,8 @@ export class JwtAuthGuard implements CanActivate {
         .cookies?.Authentication;
     }
 
+    console.log('authentication', authentication);
+
     if (!authentication) {
       throw new UnauthorizedException(
         'No value was provided for Authentication',

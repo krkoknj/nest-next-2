@@ -50,6 +50,25 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+
+  board:
+    build:
+      context: .
+      dockerfile: ./apps/board/Dockerfile
+      target: development
+    command: npm run start:dev board
+    ports:
+      - '5003:5003'
+    env_file:
+      - ./apps/board/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
   rabbitmq:
     image: rabbitmq:3-management
     ports:

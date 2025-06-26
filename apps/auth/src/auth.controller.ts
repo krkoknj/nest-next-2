@@ -8,7 +8,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -24,6 +24,13 @@ export class AuthController {
   @MessagePattern('validate_user')
   async validateUser(@CurrentUser() user) {
     console.log('validate_user', user);
+    return user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getMe(@CurrentUser() user) {
+    console.log('getMe user', user);
     return user;
   }
 }

@@ -4,8 +4,9 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './entities/user.entity';
-const COMMON_ENTITIES = [UserEntity];
+import { User } from './entities/user.entity';
+import { Board } from './entities/board.entity';
+const COMMON_ENTITIES = [User, Board];
 
 @Module({})
 export class DatabaseModule {
@@ -20,6 +21,7 @@ export class DatabaseModule {
             url: config.get<string>('DATABASE_URL'),
             synchronize: true,
             logging: true,
+            entities: COMMON_ENTITIES,
             autoLoadEntities: true,
           }),
           inject: [ConfigService],

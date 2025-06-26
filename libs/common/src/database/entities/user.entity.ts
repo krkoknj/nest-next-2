@@ -1,13 +1,8 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Board } from '@app/common';
 
 @Entity({ name: 'users' })
-export class UserEntity {
+export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -19,4 +14,7 @@ export class UserEntity {
 
   @Column({ nullable: true })
   name: string;
+
+  @OneToMany(() => Board, (board) => board.author)
+  boards: Board[];
 }

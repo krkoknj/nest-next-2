@@ -1,4 +1,4 @@
-import { UserEntity } from '@app/common';
+import { User } from '@app/common';
 import {
   Injectable,
   UnauthorizedException,
@@ -11,9 +11,9 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepo: Repository<UserEntity>,
-  ) { }
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+  ) {}
 
   async createUser(request) {
     await this.validateCreateUserRequest(request);
@@ -30,7 +30,7 @@ export class UsersService {
       user = await this.userRepo.findOne({
         where: { email: request.email },
       });
-    } catch (err) { }
+    } catch (err) {}
 
     if (user) {
       throw new UnprocessableEntityException('Email already exists.');
@@ -51,6 +51,10 @@ export class UsersService {
 
   async getUser(getUserArgs) {
     console.log('getUserArgs', getUserArgs);
-    return this.userRepo.findOne({ where: getUserArgs.userId });
+    return this.userRepo.findOne({ where: { id: getUserArgs.id } });
+  }
+
+  async getProfile(userId: number) {
+    return this.userRepo.findOne({ where: { id: userId } });
   }
 }

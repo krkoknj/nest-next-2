@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
 export interface TokenPayload {
-  userId: string;
+  id: string;
 }
 
 @Injectable()
@@ -17,7 +17,7 @@ export class AuthService {
   async login(user, response: Response) {
     console.log('Logging in user:', user);
     const tokenPayload: TokenPayload = {
-      userId: user.id,
+      id: user.id,
     };
 
     const expires = new Date();
@@ -28,14 +28,16 @@ export class AuthService {
     const token = this.jwtService.sign(tokenPayload);
 
     response.cookie('Authentication', token, {
-      httpOnly: true,
       expires,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      path: '/',
     });
   }
 
   logout(response: Response) {
     response.cookie('Authentication', '', {
-      httpOnly: true,
       expires: new Date(),
     });
   }
