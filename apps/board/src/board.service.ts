@@ -29,4 +29,11 @@ export class BoardService {
     });
     return this.boardRepository.save(board);
   }
+
+  async findBoardById(boardId: number): Promise<Board | null> {
+    return this.boardRepository.findOne({
+      where: { id: boardId },
+      relations: ['author', 'comments', 'comments.author'],
+    });
+  }
 }

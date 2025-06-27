@@ -3,6 +3,7 @@ import {
   Controller,
   DefaultValuePipe,
   Get,
+  Param,
   ParseIntPipe,
   Post,
   Query,
@@ -38,5 +39,12 @@ export class BoardController {
       userId: req.user.id,
     });
     return data;
+  }
+
+  @Get(':boardId')
+  async findBoardById(
+    @Param('boardId', ParseIntPipe) boardId: number,
+  ): Promise<Board | null> {
+    return this.boardService.findBoardById(boardId);
   }
 }

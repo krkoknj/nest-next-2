@@ -1,13 +1,14 @@
-"use client";
-import { useEffect, useState } from "react";
-import { fetcher } from "../lib/fetcher";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Board } from "../types/board";
+'use client';
+import { useEffect, useState } from 'react';
+import { fetcher } from '../lib/fetcher';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Board } from '../types/board';
+import Link from 'next/link';
 
 export default function BoardsPage() {
   const router = useRouter();
   const params = useSearchParams();
-  const initialPage = Number(params.get("page")) || 1;
+  const initialPage = Number(params.get('page')) || 1;
 
   const [boards, setBoards] = useState<Board[]>([]);
   const [total, setTotal] = useState(0);
@@ -19,11 +20,11 @@ export default function BoardsPage() {
 
   useEffect(() => {
     fetcher(
-      `${process.env.NEXT_PUBLIC_BOARD_URL}/boards?page=${page}&size=${size}`
+      `${process.env.NEXT_PUBLIC_BOARD_URL}/boards?page=${page}&size=${size}`,
     )
       .then((res: { data: Board[]; total: number | null }) => {
         if (!res) {
-          router.push("/login");
+          router.push('/login');
           return;
         }
         setBoards(res.data);
@@ -43,7 +44,7 @@ export default function BoardsPage() {
   return (
     <div>
       <h1>Board Page</h1>
-      <button onClick={() => router.push("/boards/new")}>Create Board</button>
+      <button onClick={() => router.push('/boards/new')}>Create Board</button>
       <table>
         <thead>
           <tr>
@@ -64,7 +65,9 @@ export default function BoardsPage() {
           ) : (
             boards.map((board) => (
               <tr key={board.id}>
-                <td>{board.id}</td>
+                <td>
+                  <Link href={`/boards/${board.id}`}>{board.id}</Link>
+                </td>
                 <td>{board.title}</td>
                 <td>{board.content}</td>
               </tr>
@@ -74,7 +77,7 @@ export default function BoardsPage() {
       </table>
 
       {/* 페이징 컨트롤 */}
-      <div style={{ marginTop: "1rem" }}>
+      <div style={{ marginTop: '1rem' }}>
         <button onClick={() => goTo(page - 1)} disabled={page <= 1}>
           Prev
         </button>
@@ -84,8 +87,8 @@ export default function BoardsPage() {
             key={p}
             onClick={() => goTo(p)}
             style={{
-              fontWeight: p === page ? "bold" : "normal",
-              margin: "0 0.25rem",
+              fontWeight: p === page ? 'bold' : 'normal',
+              margin: '0 0.25rem',
             }}
           >
             {p}

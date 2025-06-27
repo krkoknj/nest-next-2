@@ -6,7 +6,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
+import { Comment } from './comment.entity';
 
 @Entity({ name: 'boards' })
 export class Board {
@@ -27,4 +29,7 @@ export class Board {
 
   @ManyToOne(() => User, (user) => user.boards)
   author: User;
+
+  @OneToMany(() => Comment, (comment) => comment.board)
+  comments: Comment[];
 }

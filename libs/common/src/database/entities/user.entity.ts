@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Board } from '@app/common';
+import { Comment } from './comment.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -17,4 +18,7 @@ export class User {
 
   @OneToMany(() => Board, (board) => board.author)
   boards: Board[];
+
+  @OneToMany(() => Comment, (comment) => comment.author, { nullable: true })
+  comments?: Comment[];
 }
