@@ -15,6 +15,8 @@ import { BoardService } from './board.service';
 import { CreateBoardRequest } from '../dto/create-board.request';
 import { Board, JwtAuthGuard } from '@app/common';
 import { PaginationDto } from '../dto/pagination.dto';
+import { CreateCommentRequest } from '../dto/create-comment.request';
+import { Comment } from '@app/common/database/entities/comment.entity';
 
 @Controller('boards')
 export class BoardController {
@@ -46,5 +48,18 @@ export class BoardController {
     @Param('boardId', ParseIntPipe) boardId: number,
   ): Promise<Board | null> {
     return this.boardService.findBoardById(boardId);
+  }
+
+  @Post(':boardId/comments')
+  @UseGuards(JwtAuthGuard)
+  async createComment(
+    @Param('boardId', ParseIntPipe) boardId: number,
+    @Body() request: CreateCommentRequest,
+    @Req() req: Request & { user: { id: number } },
+  ): Promise<Comment> {
+    return this.boardService.createComment(boardId, {
+      ...request,
+      userId: req.user.id,
+    });
   }
 }

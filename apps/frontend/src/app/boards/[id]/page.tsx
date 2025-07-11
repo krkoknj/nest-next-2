@@ -1,21 +1,24 @@
 'use client';
-import { use, useContext } from 'react';
+import { use, useContext, useEffect, useState } from 'react';
 import { fetcher } from '@/app/lib/fetcher';
 import { Board } from '@/app/types/board';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { AuthContext } from '@/app/context/AuthContext';
+import { Comment } from '@/app/types/comment';
+
+// CSS Modules import
+import styles from './page.module.css';
+import BoardDetail from '@/app/components/board/BoardDetail';
 
 type Props = {
   params: Promise<{ id: string }>;
 };
 
 export default function BoardPage({ params }: Props) {
-  // params는 Promise<{id: string}> 이므로 use()로 언랩
   const { id } = use(params);
-
   const router = useRouter();
   const [board, setBoard] = useState<Board | null>(null);
+  const [commentText, setCommentText] = useState('');
   const [loading, setLoading] = useState(true);
   const { user } = useContext(AuthContext) as any;
 
@@ -29,43 +32,49 @@ export default function BoardPage({ params }: Props) {
         }
         setBoard(res);
       })
-      .catch(() => {
-        /* 에러 처리 */
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .finally(() => setLoading(false));
   }, [id, router]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!board) {
-    return <div>Board not found</div>;
-  }
+  if (loading) return <div className={styles.container}>Loading...</div>;
+  if (!board) return <div className={styles.container}>Board not found</div>;
 
   return (
-    <div>
-      <div>
-        <h1>{board.title}</h1>
-        <p>{board.content}</p>
-      </div>
-      <br></br>
-      <div>{user && <button>write comment</button>}</div>
-      <div>
-        <h2>Comments</h2>
-        {board.comments && board.comments.length > 0 ? (
-          <ul>
-            {board.comments.map((comment) => (
-              <li key={comment.id}>
-                <strong>{comment.author}</strong>: {comment.content}
+    <div className={styles.container}>
+      <BoardDetail board={board} />
+
+      <div className={styles.commentSection}>
+        {user && (
+          <button className={styles.commentButton}>Write Comment</button>
+        )}
+        <h2 className={styles.commentHeader}>Comments</h2>
+        {/* {board.comments?.length ? (
+          <ul className={styles.commentList}>
+            {board.comments.map((c: Comment) => (
+              <li key={c.id} className={styles.commentItem}>
+                <strong>{c.author?.name}</strong>: {c.content}
               </li>
             ))}
           </ul>
         ) : (
           <p>No comments yet.</p>
-        )}
+        )} */}
+        {/* 추후 입력폼 추가 시 */}
+        {/* <div className={styles.commentInputWrapper}>
+          <input
+            className={styles.commentInput}
+            type="text"
+            placeholder="Write a comment..."
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+          />
+          <button
+            className={styles.submitButton}
+            onClick={handleCommentSubmit}
+            disabled={!commentText.trim()}
+          >
+            Submit
+          </button>
+        </div> */}
       </div>
     </div>
   );

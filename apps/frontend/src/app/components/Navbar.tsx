@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import LogoutButton from "./Logout";
-import { useContext, useEffect } from "react";
-import { AuthContext } from "../context/AuthContext";
+import Link from 'next/link';
+import LogoutButton from './Logout';
+import { useContext, useEffect } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 export default function Navbar() {
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    console.log("User:", user);
+    console.log('User:', user);
   }, [user]);
   return (
     <nav>
@@ -38,6 +38,9 @@ export default function Navbar() {
         )}
         <li>
           <Link href="/boards">Boards</Link>
+        </li>
+        <li>
+          <Link href="/search">Search</Link>
         </li>
       </ul>
     </nav>

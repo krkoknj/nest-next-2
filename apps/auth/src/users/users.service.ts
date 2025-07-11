@@ -50,7 +50,6 @@ export class UsersService {
   }
 
   async getUser(getUserArgs) {
-    console.log('getUserArgs', getUserArgs);
     return this.userRepo.findOne({ where: { id: getUserArgs.id } });
   }
 

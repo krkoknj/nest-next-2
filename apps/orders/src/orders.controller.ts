@@ -5,13 +5,12 @@ import { JwtAuthGuard } from '@app/common';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) { }
+  constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
   async createOrder(@Body() request: CreateOrderRequest, @Req() req: any) {
-    console.log('orders', req.uesr);
-    return this.ordersService.createOrder(request);
+    return this.ordersService.createOrder(request, req.user);
   }
 
   @Get()

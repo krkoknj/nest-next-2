@@ -16,6 +16,7 @@ export class JwtAuthGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
+    console.log('JwtAuthGuard canActivate called', context);
     const authentication = this.getAuthentication(context);
     return this.authClient
       .send('validate_user', {

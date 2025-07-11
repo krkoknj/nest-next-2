@@ -69,6 +69,29 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+
+  search:
+    build:
+      context: .
+      dockerfile: ./apps/search/Dockerfile
+      target: development
+    command: npm run start:dev search
+    environment:
+      - ELASTIC_CLIENT_APIVERSIONING=true
+    ports:
+      - '5004:5004'
+    env_file:
+      - ./apps/search/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
   rabbitmq:
     image: rabbitmq:3-management
     ports:
@@ -99,6 +122,52 @@ services:
       retries: 5 # 재시도 횟수
       start_period: 30s # 시작 후 대기 시간
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.2
+    container_name: elasticsearch
+    environment:
+      - node.name=es01
+      - cluster.name=es-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+      - xpack.security.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - '9200:9200' # HTTP API
+      - '9300:9300' # Transport
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'curl',
+          '-f',
+          'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=1s',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.8.2
+    container_name: kibana
+    environment:
+      SERVER_NAME: kibana
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+
 volumes:
   mysql_fresh_data:
+    driver: local
+  esdata:
     driver: local

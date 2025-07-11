@@ -16,10 +16,13 @@ export class OrdersService {
     @Inject(BILLING_SERVICE) private billingClient: ClientProxy,
   ) {}
 
-  async createOrder(request: CreateOrderRequest) {
+  async createOrder(request: CreateOrderRequest, user: any) {
     const order = this.orderRepo.create(request);
     await this.orderRepo.save(order);
-    await lastValueFrom(this.billingClient.emit('order_created', { request }));
+    console.log('request->>>>>>>>>>>>>>>>>>', request);
+    await lastValueFrom(
+      this.billingClient.emit('order_created', { request, user }),
+    );
     return order;
   }
 

@@ -4,6 +4,7 @@ import { fetcher } from '../lib/fetcher';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Board } from '../types/board';
 import Link from 'next/link';
+import styles from './page.module.css';
 
 export default function BoardsPage() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function BoardsPage() {
   const [page, setPage] = useState(initialPage);
 
   useEffect(() => {
+    setLoading(true);
     fetcher(
       `${process.env.NEXT_PUBLIC_BOARD_URL}/boards?page=${page}&size=${size}`,
     )
@@ -34,7 +36,7 @@ export default function BoardsPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, [page]);
+  }, [page, router]);
 
   const goTo = (p: number) => {
     setPage(p);
@@ -42,10 +44,16 @@ export default function BoardsPage() {
   };
 
   return (
-    <div>
-      <h1>Board Page</h1>
-      <button onClick={() => router.push('/boards/new')}>Create Board</button>
-      <table>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Board Page</h1>
+      <button
+        className={styles.createBtn}
+        onClick={() => router.push('/boards/new')}
+      >
+        Create Board
+      </button>
+
+      <table className={styles.boardsTable}>
         <thead>
           <tr>
             <th>ID</th>
@@ -76,8 +84,7 @@ export default function BoardsPage() {
         </tbody>
       </table>
 
-      {/* 페이징 컨트롤 */}
-      <div style={{ marginTop: '1rem' }}>
+      <div className={styles.pagination}>
         <button onClick={() => goTo(page - 1)} disabled={page <= 1}>
           Prev
         </button>
@@ -85,11 +92,8 @@ export default function BoardsPage() {
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
           <button
             key={p}
+            className={p === page ? styles.active : ''}
             onClick={() => goTo(p)}
-            style={{
-              fontWeight: p === page ? 'bold' : 'normal',
-              margin: '0 0.25rem',
-            }}
           >
             {p}
           </button>
